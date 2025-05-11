@@ -33,6 +33,7 @@ SINGLE_BATTLE_TEST("Barb Barrage's power doubles if the target is poisoned", s16
     PARAMETRIZE { status1 = 0; }
     PARAMETRIZE { status1 = STATUS1_POISON; }
     PARAMETRIZE { status1 = STATUS1_TOXIC_POISON; }
+    PARAMETRIZE { status1 = STATUS1_BURN; }
 
     GIVEN {
         PLAYER(SPECIES_WOBBUFFET);
@@ -46,6 +47,7 @@ SINGLE_BATTLE_TEST("Barb Barrage's power doubles if the target is poisoned", s16
         EXPECT_MUL_EQ(results[0].damage, Q_4_12(1.0), results[0].damage); // no status
         EXPECT_MUL_EQ(results[0].damage, Q_4_12(2.0), results[1].damage); // poison
         EXPECT_MUL_EQ(results[0].damage, Q_4_12(2.0), results[2].damage); // toxic
+        EXPECT_MUL_EQ(results[0].damage, Q_4_12(1.0), results[3].damage); // burn (other statuses)
     }
 }
 
