@@ -19093,8 +19093,12 @@ const struct MoveInfo gMovesInfo[MOVES_COUNT_ALL] =
     {
         .name = COMPOUND_STRING("Stone Axe"),
         .description = COMPOUND_STRING(
-            "High critical hit ratio. Sets\n"
-            "Splinters that hurt the foe."),
+            "Sets floating stones that\n"
+            "hurt a foe switching in."),
+        //PLA description
+        //.description = COMPOUND_STRING(
+        //    "High critical hit ratio. Sets\n"
+        //    "Splinters that hurt the foe."),
         .effect = EFFECT_HIT,
         .power = 65,
         .type = TYPE_ROCK,
@@ -19433,8 +19437,12 @@ const struct MoveInfo gMovesInfo[MOVES_COUNT_ALL] =
     {
         .name = COMPOUND_STRING("Ceaseless Edge"),
         .description = COMPOUND_STRING(
-            "High critical hit ratio. Sets\n"
-            "Splinters that hurt the foe."),
+            "Sets spikes that hurt a \n"
+            "foe switching in."),
+        //PLA Move description
+        //.description = COMPOUND_STRING(
+        //    "High critical hit ratio. Sets\n"
+        //    "Splinters that hurt the foe."),
         .effect = EFFECT_HIT,
         .power = 65,
         .type = TYPE_DARK,
