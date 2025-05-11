@@ -19329,21 +19329,35 @@ const struct MoveInfo gMovesInfo[MOVES_COUNT_ALL] =
     [MOVE_BITTER_MALICE] =
     {
         .name = COMPOUND_STRING("Bitter Malice"),
-        .description = COMPOUND_STRING(
-            "A spine-chilling resentment.\n"
-            "Lowers the foe's Attack."),
-        .effect = EFFECT_HIT,
-        .power = B_UPDATED_MOVE_DATA >= GEN_9 ? 75 : 60,
+        #if B_UPDATED_MOVE_DATA >= GEN_9
+            .description = COMPOUND_STRING(
+                "A spine-chilling resentment.\n"
+                "Lowers the foe's Attack."),
+            .effect = EFFECT_HIT,
+            .power = 75,
+            .pp = 10,
+            .additionalEffects = ADDITIONAL_EFFECTS({
+                .moveEffect = MOVE_EFFECT_ATK_MINUS_1,
+                .chance = 100,
+            }),
+        #else
+            .description = COMPOUND_STRING(
+                "Stronger if foe has status.\n"
+                "May cause frostbite."),
+            .power = 60,
+            .pp = 15,
+            .effect = EFFECT_DOUBLE_POWER_ON_ARG_STATUS,
+            .argument = STATUS1_ANY, // allow all statuses
+            .additionalEffects = ADDITIONAL_EFFECTS({
+                .moveEffect = MOVE_EFFECT_FROSTBITE,
+                .chance = 30,
+            }),
+        #endif
         .type = TYPE_GHOST,
         .accuracy = 100,
-        .pp = 15,
         .target = MOVE_TARGET_SELECTED,
         .priority = 0,
         .category = DAMAGE_CATEGORY_SPECIAL,
-        .additionalEffects = ADDITIONAL_EFFECTS({
-            .moveEffect = MOVE_EFFECT_ATK_MINUS_1,
-            .chance = 100,
-        }),
         .battleAnimScript = gBattleAnimMove_BitterMalice,
     },
 
@@ -19453,10 +19467,17 @@ const struct MoveInfo gMovesInfo[MOVES_COUNT_ALL] =
         .priority = 0,
         .category = DAMAGE_CATEGORY_SPECIAL,
         .windMove = TRUE,
-        .additionalEffects = ADDITIONAL_EFFECTS({
-            .moveEffect = MOVE_EFFECT_SPD_MINUS_1,
-            .chance = 30,
-        }),
+        #if B_UPDATED_MOVE_DATA >= GEN_9
+            .additionalEffects = ADDITIONAL_EFFECTS({
+                .moveEffect = MOVE_EFFECT_SPD_MINUS_1,
+                .chance = 30,
+            }),
+        #else
+            .additionalEffects = ADDITIONAL_EFFECTS({
+                .moveEffect = MOVE_EFFECT_FROSTBITE,
+                .chance = 30,
+            }),
+        #endif
         .battleAnimScript = gBattleAnimMove_BleakwindStorm,
     },
 
@@ -19477,7 +19498,11 @@ const struct MoveInfo gMovesInfo[MOVES_COUNT_ALL] =
         .windMove = TRUE,
         .additionalEffects = ADDITIONAL_EFFECTS({
             .moveEffect = MOVE_EFFECT_PARALYSIS,
-            .chance = 20,
+            #if B_UPDATED_MOVE_DATA >= GEN_9
+                .chance = 20,
+            #else
+                .chance = 30,
+            #endif
         }),
         .battleAnimScript = gBattleAnimMove_WildboltStorm,
     },
@@ -19499,7 +19524,11 @@ const struct MoveInfo gMovesInfo[MOVES_COUNT_ALL] =
         .windMove = TRUE,
         .additionalEffects = ADDITIONAL_EFFECTS({
             .moveEffect = MOVE_EFFECT_BURN,
-            .chance = 20,
+            #if B_UPDATED_MOVE_DATA >= GEN_9
+                .chance = 20,
+            #else
+                .chance = 30,
+            #endif
         }),
         .battleAnimScript = gBattleAnimMove_SandsearStorm,
     },
