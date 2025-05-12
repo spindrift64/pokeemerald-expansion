@@ -19467,9 +19467,33 @@ const struct MoveInfo gMovesInfo[MOVES_COUNT_ALL] =
     [MOVE_BLEAKWIND_STORM] =
     {
         .name = COMPOUND_STRING("Bleakwind Storm"),
-        .description = COMPOUND_STRING(
-            "Hits with brutal, cold winds.\n"
-            "May lower the foe's Speed."),
+        #if B_UPDATED_MOVE_DATA >= GEN_9
+            .description = COMPOUND_STRING(
+                "Hits with brutal, cold winds.\n"
+                "May lower the foe's Speed."),
+            .additionalEffects = ADDITIONAL_EFFECTS({
+                .moveEffect = MOVE_EFFECT_SPD_MINUS_1,
+                .chance = 30,
+            }),
+        #else
+            #if B_USE_FROSTBITE == TRUE
+                .description = COMPOUND_STRING(
+                    "Hits with brutal, cold winds.\n"
+                    "May frostbite."),
+                .additionalEffects = ADDITIONAL_EFFECTS({
+                    .moveEffect = MOVE_EFFECT_FROSTBITE,
+                    .chance = 30,
+                }),
+            #else
+                .description = COMPOUND_STRING(
+                    "Hits with brutal, cold winds.\n"
+                    "May freeze the foe."),
+                .additionalEffects = ADDITIONAL_EFFECTS({
+                    .moveEffect = MOVE_EFFECT_FREEZE,
+                    .chance = 30,
+                }),
+            #endif
+        #endif
         .effect = EFFECT_RAIN_ALWAYS_HIT,
         .power = B_UPDATED_MOVE_DATA >= GEN_9 ? 100 : 95,
         .type = TYPE_FLYING,
@@ -19479,21 +19503,6 @@ const struct MoveInfo gMovesInfo[MOVES_COUNT_ALL] =
         .priority = 0,
         .category = DAMAGE_CATEGORY_SPECIAL,
         .windMove = TRUE,
-        #if B_UPDATED_MOVE_DATA >= GEN_9
-            .additionalEffects = ADDITIONAL_EFFECTS({
-                .moveEffect = MOVE_EFFECT_SPD_MINUS_1,
-                .chance = 30,
-            }),
-        #else
-            .additionalEffects = ADDITIONAL_EFFECTS({
-                #if B_USE_FROSTBITE == TRUE
-                    .moveEffect = MOVE_EFFECT_FROSTBITE,
-                #else
-                    .moveEffect = MOVE_EFFECT_FREEZE,
-                #endif
-                .chance = 30,
-            }),
-        #endif
         .battleAnimScript = gBattleAnimMove_BleakwindStorm,
     },
 
