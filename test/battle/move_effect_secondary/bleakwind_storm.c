@@ -6,7 +6,11 @@ ASSUMPTIONS
 #if B_UPDATED_MOVE_DATA >= GEN_9
     ASSUME(MoveHasAdditionalEffect(MOVE_BLEAKWIND_STORM, MOVE_EFFECT_SPD_MINUS_1));
 #else
-    ASSUME(MoveHasAdditionalEffect(MOVE_BLEAKWIND_STORM, MOVE_EFFECT_FROSTBITE));
+    #if B_USE_FROSTBITE == TRUE
+        ASSUME(MoveHasAdditionalEffect(MOVE_BLEAKWIND_STORM, MOVE_EFFECT_FROSTBITE));
+    #else
+        ASSUME(MoveHasAdditionalEffect(MOVE_BLEAKWIND_STORM, MOVE_EFFECT_FREEZE));
+    #endif
 #endif
 }
 
@@ -53,8 +57,7 @@ SINGLE_BATTLE_TEST("Bleakwind Storm may cause frostbite (Pre-Gen 9)")
         TURN { MOVE(player, MOVE_BLEAKWIND_STORM); }
     } SCENE {
         ANIMATION(ANIM_TYPE_MOVE, MOVE_BLEAKWIND_STORM, player);
-        ANIMATION(ANIM_TYPE_STATUS, B_ANIM_STATUS_FRZ, opponent); // Frostbite uses freeze anim
-        STATUS_ICON(opponent, frostbite: TRUE);
+        ANIMATION(ANIM_TYPE_STATUS, B_ANIM_STATUS_FRZ, opponent);
     }
 }
 

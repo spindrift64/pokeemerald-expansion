@@ -6,7 +6,11 @@ ASSUMPTIONS
 #if B_UPDATED_MOVE_DATA >= GEN_9
     ASSUME(MoveHasAdditionalEffect(MOVE_BITTER_MALICE, MOVE_EFFECT_ATK_MINUS_1));
 #else
-    ASSUME(MoveHasAdditionalEffect(MOVE_BITTER_MALICE, MOVE_EFFECT_FROSTBITE));
+    #if B_USE_FROSTBITE == TRUE
+        ASSUME(MoveHasAdditionalEffect(MOVE_BITTER_MALICE, MOVE_EFFECT_FROSTBITE));
+    #else
+        ASSUME(MoveHasAdditionalEffect(MOVE_BITTER_MALICE, MOVE_EFFECT_FREEZE));
+    #endif
     ASSUME(GetMoveEffect(MOVE_BITTER_MALICE) == EFFECT_DOUBLE_POWER_ON_ARG_STATUS);
     ASSUME(GetMoveEffectArg_Status(MOVE_BITTER_MALICE) == STATUS1_ANY);
 #endif
@@ -34,6 +38,8 @@ SINGLE_BATTLE_TEST("Bitter Malice does not double power when the target is statu
     PARAMETRIZE { status1 = STATUS1_POISON; }
     PARAMETRIZE { status1 = STATUS1_BURN; }
     PARAMETRIZE { status1 = STATUS1_PARALYSIS; }
+    PARAMETRIZE { status1 = STATUS1_FREEZE; }
+    PARAMETRIZE { status1 = STATUS1_SLEEP; }
     PARAMETRIZE { status1 = STATUS1_TOXIC_POISON; }
     PARAMETRIZE { status1 = STATUS1_FROSTBITE; }
 
@@ -46,7 +52,7 @@ SINGLE_BATTLE_TEST("Bitter Malice does not double power when the target is statu
         ANIMATION(ANIM_TYPE_MOVE, MOVE_BITTER_MALICE, player);
         HP_BAR(opponent, captureDamage: &results[i].damage);
     } FINALLY {
-        for (int j = 1; j < 6; j++) {
+        for (int j = 1; j < 8; j++) {
             EXPECT_EQ(results[j].damage, results[0].damage);
         }
     }
@@ -72,7 +78,6 @@ SINGLE_BATTLE_TEST("Bitter Malice may cause frostbite (Gen 8)")
     } SCENE {
         ANIMATION(ANIM_TYPE_MOVE, MOVE_BITTER_MALICE, player);
         ANIMATION(ANIM_TYPE_STATUS, B_ANIM_STATUS_FRZ, opponent);
-        STATUS_ICON(opponent, frostbite: TRUE);
     }
 }
 
@@ -97,13 +102,14 @@ SINGLE_BATTLE_TEST("Bitter Malice's power doubles if the target is statused", s1
         ANIMATION(ANIM_TYPE_MOVE, MOVE_BITTER_MALICE, player);
         HP_BAR(opponent, captureDamage: &results[i].damage);
     } FINALLY {
-        EXPECT_MUL_EQ(results[0].damage, Q_4_12(2.0), results[1].damage); // poison
-        EXPECT_MUL_EQ(results[0].damage, Q_4_12(2.0), results[2].damage); // burn
-        EXPECT_MUL_EQ(results[0].damage, Q_4_12(2.0), results[3].damage); // paralysis
-        EXPECT_MUL_EQ(results[0].damage, Q_4_12(2.0), results[4].damage); // freeze
-        EXPECT_MUL_EQ(results[0].damage, Q_4_12(2.0), results[5].damage); // sleep
-        EXPECT_MUL_EQ(results[0].damage, Q_4_12(2.0), results[6].damage); // toxic
-        EXPECT_MUL_EQ(results[0].damage, Q_4_12(2.0), results[7].damage); // frostbite
+        EXPECT_MUL_EQ(results[0].damage, Q_4_12(1.0), results[0].damage);
+        EXPECT_MUL_EQ(results[0].damage, Q_4_12(2.0), results[1].damage);
+        EXPECT_MUL_EQ(results[0].damage, Q_4_12(2.0), results[2].damage);
+        EXPECT_MUL_EQ(results[0].damage, Q_4_12(2.0), results[3].damage);
+        EXPECT_MUL_EQ(results[0].damage, Q_4_12(2.0), results[4].damage);
+        EXPECT_MUL_EQ(results[0].damage, Q_4_12(2.0), results[5].damage);
+        EXPECT_MUL_EQ(results[0].damage, Q_4_12(2.0), results[6].damage);
+        EXPECT_MUL_EQ(results[0].damage, Q_4_12(2.0), results[7].damage);
     }
 }
 

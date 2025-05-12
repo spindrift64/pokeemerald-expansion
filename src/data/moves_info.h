@@ -19347,7 +19347,11 @@ const struct MoveInfo gMovesInfo[MOVES_COUNT_ALL] =
         #else
             .description = COMPOUND_STRING(
                 "Stronger if foe has status.\n"
-                "May cause frostbite."),
+                #if B_USE_FROSTBITE == TRUE
+                    "May cause frostbite."),
+                #else
+                    "May freeze the foe."),
+                #endif
             .power = 60,
             .pp = 15,
             .effect = EFFECT_DOUBLE_POWER_ON_ARG_STATUS,
@@ -19482,7 +19486,11 @@ const struct MoveInfo gMovesInfo[MOVES_COUNT_ALL] =
             }),
         #else
             .additionalEffects = ADDITIONAL_EFFECTS({
-                .moveEffect = MOVE_EFFECT_FROSTBITE,
+                #if B_USE_FROSTBITE == TRUE
+                    .moveEffect = MOVE_EFFECT_FROSTBITE,
+                #else
+                    .moveEffect = MOVE_EFFECT_FREEZE,
+                #endif
                 .chance = 30,
             }),
         #endif
