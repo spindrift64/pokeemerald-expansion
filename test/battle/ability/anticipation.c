@@ -329,7 +329,7 @@ SINGLE_BATTLE_TEST("Anticipation treats Hidden Power as its dynamic type (Gen6+)
 SINGLE_BATTLE_TEST("Anticipation treats Hidden Power as Normal Type (Gen4-5)")
 {
     GIVEN {
-        WITH_CONFIG(GEN_CONFIG_ANTICIPATION_HIDDEN_POWER, GEN_5);
+        WITH_CONFIG(GEN_CONFIG_ANTICIPATION, GEN_5);
         ASSUME(GetSpeciesType(SPECIES_EEVEE, 0) == TYPE_NORMAL);
         ASSUME(GetSpeciesType(SPECIES_EEVEE, 1) == TYPE_NORMAL);
         PLAYER(SPECIES_EEVEE) { Ability(ABILITY_ANTICIPATION); Item(ITEM_CHOPLE_BERRY); }
