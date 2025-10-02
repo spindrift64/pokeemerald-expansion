@@ -57,62 +57,6 @@ SINGLE_BATTLE_TEST("Anticipation doesn't consider Normalize into their effective
     }
 }
 
-SINGLE_BATTLE_TEST("Anticipation doesn't consider Scrappy into their effectiveness (Gen5+)")
-{
-    KNOWN_FAILING;
-    GIVEN {
-        ASSUME(GetMoveType(MOVE_CLOSE_COMBAT) == TYPE_FIGHTING);
-        ASSUME(GetSpeciesType(SPECIES_EEVEE, 0) == TYPE_NORMAL);
-        ASSUME(GetSpeciesType(SPECIES_EEVEE, 1) == TYPE_NORMAL);
-        PLAYER(SPECIES_EEVEE) { Ability(ABILITY_ANTICIPATION); }
-        OPPONENT(SPECIES_KANGASKHAN) { Ability(ABILITY_SCRAPPY); Moves(MOVE_CLOSE_COMBAT, MOVE_TRICK_OR_TREAT, MOVE_SKILL_SWAP, MOVE_CELEBRATE); }
-    } WHEN {
-        TURN { MOVE(opponent, MOVE_TRICK_OR_TREAT); MOVE(player, MOVE_SKILL_SWAP); }
-        TURN { MOVE(opponent, MOVE_SKILL_SWAP); }
-    } SCENE {
-        ABILITY_POPUP(player, ABILITY_ANTICIPATION);
-        ANIMATION(ANIM_TYPE_MOVE, MOVE_TRICK_OR_TREAT, opponent);
-        ANIMATION(ANIM_TYPE_MOVE, MOVE_SKILL_SWAP, player);
-        ANIMATION(ANIM_TYPE_MOVE, MOVE_SKILL_SWAP, opponent);
-        NOT ABILITY_POPUP(player, ABILITY_ANTICIPATION);
-    }
-}
-
-SINGLE_BATTLE_TEST("Anticipation doesn't consider Gravity into their effectiveness (Gen5+)")
-{
-    KNOWN_FAILING;
-    GIVEN {
-        PLAYER(SPECIES_SKARMORY);
-        OPPONENT(SPECIES_EEVEE) { Ability(ABILITY_ANTICIPATION); Moves(MOVE_EARTHQUAKE, MOVE_GRAVITY, MOVE_SCRATCH, MOVE_POUND); }
-    } WHEN {
-        TURN { MOVE(opponent, MOVE_GRAVITY); MOVE(player, MOVE_SKILL_SWAP); }
-    } SCENE {
-        ANIMATION(ANIM_TYPE_MOVE, MOVE_GRAVITY, opponent);
-        ANIMATION(ANIM_TYPE_MOVE, MOVE_SKILL_SWAP, player);
-        NOT ABILITY_POPUP(player, ABILITY_ANTICIPATION);
-    }
-}
-
-SINGLE_BATTLE_TEST("Anticipation counts Counter, Metal Burst or Mirror Coat as attacking moves of their types (Gen5+)")
-{
-    u32 move, species, typeAtk, typeDef;
-    PARAMETRIZE { move = MOVE_COUNTER; species = SPECIES_RATICATE; typeAtk = TYPE_FIGHTING; typeDef = TYPE_NORMAL; }
-    PARAMETRIZE { move = MOVE_METAL_BURST; species = SPECIES_ROGGENROLA; typeAtk = TYPE_STEEL; typeDef = TYPE_ROCK; }
-    PARAMETRIZE { move = MOVE_MIRROR_COAT; species = SPECIES_NIDORINO; typeAtk = TYPE_PSYCHIC; typeDef = TYPE_POISON; }
-    GIVEN {
-        ASSUME(GetMoveType(move) == typeAtk);
-        ASSUME(GetSpeciesType(species, 0) == typeDef);
-        ASSUME(GetSpeciesType(species, 1) == typeDef);
-        PLAYER(species);
-        OPPONENT(SPECIES_EEVEE) { Ability(ABILITY_ANTICIPATION); Moves(move, MOVE_SKILL_SWAP, MOVE_POUND, MOVE_CELEBRATE); }
-    } WHEN {
-        TURN { MOVE(opponent, MOVE_SKILL_SWAP); }
-    } SCENE {
-        ANIMATION(ANIM_TYPE_MOVE, MOVE_SKILL_SWAP, opponent);
-        ABILITY_POPUP(player, ABILITY_ANTICIPATION);
-    }
-}
-
 SINGLE_BATTLE_TEST("Anticipation considers Synchronoise as an ordinary Psychic-type move")
 {
     GIVEN {
@@ -362,6 +306,126 @@ SINGLE_BATTLE_TEST("Anticipation considers Inverse Battle types")
     }
 }
 
+SINGLE_BATTLE_TEST("Anticipation doesn't consider Scrappy into their effectiveness (Gen5+)")
+{
+    GIVEN {
+        PLAYER(SPECIES_DOUBLADE) { Ability(ABILITY_ANTICIPATION); }
+        OPPONENT(SPECIES_KANGASKHAN) { Ability(ABILITY_SCRAPPY); Moves(MOVE_CLOSE_COMBAT, MOVE_CELEBRATE); }
+    } WHEN {
+        TURN { }
+    } SCENE {
+        NOT ABILITY_POPUP(player, ABILITY_ANTICIPATION);
+    }
+}
+
+SINGLE_BATTLE_TEST("Anticipation considers Scrappy into their effectiveness (Gen4)")
+{
+    GIVEN {
+        WITH_CONFIG(GEN_CONFIG_ANTICIPATION, GEN_4);
+        PLAYER(SPECIES_DOUBLADE) { Ability(ABILITY_ANTICIPATION); }
+        OPPONENT(SPECIES_KANGASKHAN) { Ability(ABILITY_SCRAPPY); Moves(MOVE_CLOSE_COMBAT, MOVE_CELEBRATE); }
+    } WHEN {
+        TURN { }
+    } SCENE {
+        ABILITY_POPUP(player, ABILITY_ANTICIPATION);
+    }
+}
+
+SINGLE_BATTLE_TEST("Anticipation doesn't consider Normalize into their effectiveness (Gen5+)")
+{
+    GIVEN {
+        PLAYER(SPECIES_MANTINE) { Ability(ABILITY_ANTICIPATION); }
+        OPPONENT(SPECIES_DELCATTY) { Ability(ABILITY_NORMALIZE); Moves(MOVE_THUNDERBOLT, MOVE_CELEBRATE); }
+    } WHEN {
+        TURN { }
+    } SCENE {
+        ABILITY_POPUP(player, ABILITY_ANTICIPATION);
+    }
+}
+
+SINGLE_BATTLE_TEST("Anticipation considers Normalize into their effectiveness (Gen4)")
+{
+    GIVEN {
+        WITH_CONFIG(GEN_CONFIG_ANTICIPATION, GEN_4);
+        PLAYER(SPECIES_MANTINE) { Ability(ABILITY_ANTICIPATION); }
+        OPPONENT(SPECIES_DELCATTY) { Ability(ABILITY_NORMALIZE); Moves(MOVE_THUNDERBOLT, MOVE_CELEBRATE); }
+    } WHEN {
+        TURN { }
+    } SCENE {
+        NOT ABILITY_POPUP(player, ABILITY_ANTICIPATION);
+    }
+}
+
+SINGLE_BATTLE_TEST("Anticipation doesn't consider Gravity into their effectiveness (Gen5+)")
+{
+    GIVEN {
+        PLAYER(SPECIES_COTTONEE);
+        PLAYER(SPECIES_SKARMORY) { Ability(ABILITY_ANTICIPATION); }
+        OPPONENT(SPECIES_WOBBUFFET) { Moves(MOVE_EARTHQUAKE, MOVE_GRAVITY, MOVE_CELEBRATE); }
+    } WHEN {
+        TURN { MOVE(opponent, MOVE_GRAVITY); MOVE(player, MOVE_CELEBRATE); }
+        TURN { SWITCH(player, 1);}
+    } SCENE {
+        ANIMATION(ANIM_TYPE_MOVE, MOVE_GRAVITY, opponent);
+        NOT ABILITY_POPUP(player, ABILITY_ANTICIPATION);
+    }
+}
+
+SINGLE_BATTLE_TEST("Anticipation considers Gravity into their effectiveness (Gen4)")
+{
+    GIVEN {
+        PLAYER(SPECIES_COTTONEE);
+        PLAYER(SPECIES_SKARMORY) { Ability(ABILITY_ANTICIPATION); }
+        OPPONENT(SPECIES_WOBBUFFET) { Moves(MOVE_EARTHQUAKE, MOVE_GRAVITY, MOVE_CELEBRATE); }
+    } WHEN {
+        TURN { MOVE(opponent, MOVE_GRAVITY); MOVE(player, MOVE_CELEBRATE); }
+        TURN { SWITCH(player, 1);}
+    } SCENE {
+        ANIMATION(ANIM_TYPE_MOVE, MOVE_GRAVITY, opponent);
+        ABILITY_POPUP(player, ABILITY_ANTICIPATION);
+    }
+}
+
+SINGLE_BATTLE_TEST("Anticipation counts Counter, Metal Burst or Mirror Coat as attacking moves of their types (Gen5+)")
+{
+    u32 move, species, typeAtk, typeDef;
+    PARAMETRIZE { move = MOVE_COUNTER; species = SPECIES_RATICATE; typeAtk = TYPE_FIGHTING; typeDef = TYPE_NORMAL; }
+    PARAMETRIZE { move = MOVE_METAL_BURST; species = SPECIES_ROGGENROLA; typeAtk = TYPE_STEEL; typeDef = TYPE_ROCK; }
+    PARAMETRIZE { move = MOVE_MIRROR_COAT; species = SPECIES_NIDORINO; typeAtk = TYPE_PSYCHIC; typeDef = TYPE_POISON; }
+    GIVEN {
+        ASSUME(GetMoveType(move) == typeAtk);
+        ASSUME(GetSpeciesType(species, 0) == typeDef);
+        ASSUME(GetSpeciesType(species, 1) == typeDef);
+        PLAYER(species);
+        OPPONENT(SPECIES_EEVEE) { Ability(ABILITY_ANTICIPATION); Moves(move, MOVE_SKILL_SWAP, MOVE_POUND, MOVE_CELEBRATE); }
+    } WHEN {
+        TURN { MOVE(opponent, MOVE_SKILL_SWAP); }
+    } SCENE {
+        ANIMATION(ANIM_TYPE_MOVE, MOVE_SKILL_SWAP, opponent);
+        ABILITY_POPUP(player, ABILITY_ANTICIPATION);
+    }
+}
+
+SINGLE_BATTLE_TEST("Anticipation doesn't trigger from Counter, Metal Burst or Mirror Coat (Gen4)")
+{
+    u32 move, species, typeAtk, typeDef;
+    PARAMETRIZE { move = MOVE_COUNTER; species = SPECIES_RATICATE; typeAtk = TYPE_FIGHTING; typeDef = TYPE_NORMAL; }
+    PARAMETRIZE { move = MOVE_METAL_BURST; species = SPECIES_ROGGENROLA; typeAtk = TYPE_STEEL; typeDef = TYPE_ROCK; }
+    PARAMETRIZE { move = MOVE_MIRROR_COAT; species = SPECIES_NIDORINO; typeAtk = TYPE_PSYCHIC; typeDef = TYPE_POISON; }
+    GIVEN {
+        ASSUME(GetMoveType(move) == typeAtk);
+        ASSUME(GetSpeciesType(species, 0) == typeDef);
+        ASSUME(GetSpeciesType(species, 1) == typeDef);
+        PLAYER(species);
+        OPPONENT(SPECIES_EEVEE) { Ability(ABILITY_ANTICIPATION); Moves(move, MOVE_SKILL_SWAP, MOVE_POUND, MOVE_CELEBRATE); }
+    } WHEN {
+        TURN { MOVE(opponent, MOVE_SKILL_SWAP); }
+    } SCENE {
+        ANIMATION(ANIM_TYPE_MOVE, MOVE_SKILL_SWAP, opponent);
+        NOT ABILITY_POPUP(player, ABILITY_ANTICIPATION);
+    }
+}
+
 SINGLE_BATTLE_TEST("Anticipation causes notifies if an opponent has a Self-Destruct or Explosion (Gen4)")
 {
     GIVEN {
@@ -376,7 +440,7 @@ SINGLE_BATTLE_TEST("Anticipation causes notifies if an opponent has a Self-Destr
     }
 }
 
-SINGLE_BATTLE_TEST("Anticipation does not notify if an opponent has a Self-Destruct or Explosion after Gen 4")
+SINGLE_BATTLE_TEST("Anticipation does not notify if an opponent has a Self-Destruct or Explosion (Gen5+)")
 {
     GIVEN {
         WITH_CONFIG(GEN_CONFIG_ANTICIPATION, GEN_LATEST);
@@ -386,14 +450,6 @@ SINGLE_BATTLE_TEST("Anticipation does not notify if an opponent has a Self-Destr
     } WHEN {
         TURN { }
     } SCENE {
-        NONE_OF {
-            ABILITY_POPUP(player, ABILITY_ANTICIPATION);\
-        }
+        NOT ABILITY_POPUP(player, ABILITY_ANTICIPATION);
     }
 }
-
-
-
-TO_DO_BATTLE_TEST("Anticipation considers Scrappy and Normalize into their effectiveness (Gen4)");
-TO_DO_BATTLE_TEST("Anticipation considers Gravity into their effectiveness (Gen4)");
-TO_DO_BATTLE_TEST("Anticipation doesn't trigger from Counter, Metal Burst or Mirror Coat (Gen4)");
