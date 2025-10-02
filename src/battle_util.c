@@ -3706,7 +3706,10 @@ u32 AbilityBattleEffects(u32 caseID, u32 battler, u32 ability, u32 special, u32 
                             if (GetTypeModifier(moveType, types[0]) >= UQ_4_12(2.0)
                              || (types[0] != types[1] && GetTypeModifier(moveType, types[1]) >= UQ_4_12(2.0))
                              || (types[2] != TYPE_MYSTERY && GetTypeModifier(moveType, types[2]) >= UQ_4_12(2.0))
-                             || (GetGenConfig(GEN_CONFIG_ANTICIPATION) >= GEN_6 && moveEffect == EFFECT_HIDDEN_POWER && GetTypeModifier(CheckDynamicMoveType(GetBattlerMon(i), move, i, MON_IN_BATTLE), types[0]) >= UQ_4_12(2.0))
+                             || (GetGenConfig(GEN_CONFIG_ANTICIPATION) >= GEN_6
+                                 && moveEffect == EFFECT_HIDDEN_POWER
+                                 && GetTypeModifier(CheckDynamicMoveType(GetBattlerMon(i), move, i, MON_IN_BATTLE), types[0]) >= UQ_4_12(2.0))
+                             || (!(GetGenConfig(GEN_CONFIG_ANTICIPATION) > GEN_4) && moveEffect == EFFECT_EXPLOSION)
                              || moveEffect == EFFECT_OHKO
                              || moveEffect == EFFECT_SHEER_COLD)
                             {

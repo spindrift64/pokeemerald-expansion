@@ -362,7 +362,38 @@ SINGLE_BATTLE_TEST("Anticipation considers Inverse Battle types")
     }
 }
 
-TO_DO_BATTLE_TEST("Anticipation causes notifies if an opponent has a Self-Destruct or Explosion (Gen4)");
+SINGLE_BATTLE_TEST("Anticipation causes notifies if an opponent has a Self-Destruct or Explosion (Gen4)")
+{
+    GIVEN {
+        WITH_CONFIG(GEN_CONFIG_ANTICIPATION, GEN_4);
+        ASSUME(GetMoveEffect(MOVE_SELF_DESTRUCT) == EFFECT_EXPLOSION);
+        PLAYER(SPECIES_COTTONEE) { Ability(ABILITY_ANTICIPATION); }
+        OPPONENT(SPECIES_WOBBUFFET) { Moves(MOVE_CELEBRATE, MOVE_SELF_DESTRUCT); }
+    } WHEN {
+        TURN { }
+    } SCENE {
+        ABILITY_POPUP(player, ABILITY_ANTICIPATION);
+    }
+}
+
+SINGLE_BATTLE_TEST("Anticipation does not notify if an opponent has a Self-Destruct or Explosion after Gen 4")
+{
+    GIVEN {
+        WITH_CONFIG(GEN_CONFIG_ANTICIPATION, GEN_LATEST);
+        ASSUME(GetMoveEffect(MOVE_SELF_DESTRUCT) == EFFECT_EXPLOSION);
+        PLAYER(SPECIES_COTTONEE) { Ability(ABILITY_ANTICIPATION); }
+        OPPONENT(SPECIES_WOBBUFFET) { Moves(MOVE_CELEBRATE, MOVE_SELF_DESTRUCT); }
+    } WHEN {
+        TURN { }
+    } SCENE {
+        NONE_OF {
+            ABILITY_POPUP(player, ABILITY_ANTICIPATION);\
+        }
+    }
+}
+
+
+
 TO_DO_BATTLE_TEST("Anticipation considers Scrappy and Normalize into their effectiveness (Gen4)");
 TO_DO_BATTLE_TEST("Anticipation considers Gravity into their effectiveness (Gen4)");
 TO_DO_BATTLE_TEST("Anticipation doesn't trigger from Counter, Metal Burst or Mirror Coat (Gen4)");
