@@ -16,6 +16,18 @@ SINGLE_BATTLE_TEST("Anticipation causes notifies if an opponent has a super-effe
     }
 }
 
+SINGLE_BATTLE_TEST("Anticipation does not trigger even when a move is super effective on only 1 type")
+{
+    GIVEN {
+        PLAYER(SPECIES_WHISCASH) { Ability(ABILITY_ANTICIPATION); }
+        OPPONENT(SPECIES_PIKACHU) { Moves(MOVE_CELEBRATE, MOVE_THUNDERBOLT); }
+    } WHEN {
+        TURN { }
+    } SCENE {
+        NOT ABILITY_POPUP(player, ABILITY_ANTICIPATION);
+    }
+}
+
 SINGLE_BATTLE_TEST("Anticipation causes notifies if an opponent has a One-hit KO move")
 {
     GIVEN {
