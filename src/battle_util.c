@@ -3688,11 +3688,13 @@ u32 AbilityBattleEffects(u32 caseID, u32 battler, u32 ability, u32 special, u32 
                 gSpecialStatuses[battler].switchInAbilityDone = TRUE;
             }
             break;
-        case ABILITY_ANTICIPATION:
+        case ABILITY_ANTICIPATION: //anticipation
             if (!gSpecialStatuses[battler].switchInAbilityDone)
             {
                 u32 types[3];
                 GetBattlerTypes(battler, FALSE, types);
+                struct DamageContext ctx = {0};
+                uq4_12_t modifier = UQ_4_12(1.0);
                 for (i = 0; i < MAX_BATTLERS_COUNT; i++)
                 {
                     if (IsBattlerAlive(i) && !IsBattlerAlly(i, battler))
@@ -3703,15 +3705,20 @@ u32 AbilityBattleEffects(u32 caseID, u32 battler, u32 ability, u32 special, u32 
                             enum BattleMoveEffects moveEffect = GetMoveEffect(move);
                             moveType = GetBattleMoveType(move);
 
-                            if (GetTypeModifier(moveType, types[0]) >= UQ_4_12(2.0)
-                             || (types[0] != types[1] && GetTypeModifier(moveType, types[1]) >= UQ_4_12(2.0))
-                             || (types[2] != TYPE_MYSTERY && GetTypeModifier(moveType, types[2]) >= UQ_4_12(2.0))
-                             || (GetGenConfig(GEN_CONFIG_ANTICIPATION) >= GEN_6
-                                 && moveEffect == EFFECT_HIDDEN_POWER
-                                 && GetTypeModifier(CheckDynamicMoveType(GetBattlerMon(i), move, i, MON_IN_BATTLE), types[0]) >= UQ_4_12(2.0))
-                             || (!(GetGenConfig(GEN_CONFIG_ANTICIPATION) > GEN_4) && moveEffect == EFFECT_EXPLOSION)
-                             || moveEffect == EFFECT_OHKO
-                             || moveEffect == EFFECT_SHEER_COLD)
+                            ctx.battlerAtk = i;
+                            ctx.battlerDef = battler;
+                            ctx.move = move;
+                            ctx.moveType = moveType;
+                            modifier = CalcTypeEffectivenessMultiplier(&ctx);
+
+                            if ((modifier >= UQ_4_12(2.0)
+                                && !(!(GetGenConfig(GEN_CONFIG_ANTICIPATION) > GEN_4) && (moveEffect == EFFECT_COUNTER || moveEffect == EFFECT_MIRROR_COAT || moveEffect == EFFECT_METAL_BURST)))
+                            || (GetGenConfig(GEN_CONFIG_ANTICIPATION) >= GEN_6
+                                && moveEffect == EFFECT_HIDDEN_POWER
+                                && GetTypeModifier(CheckDynamicMoveType(GetBattlerMon(i), move, i, MON_IN_BATTLE), types[0]) >= UQ_4_12(2.0))
+                            || (!(GetGenConfig(GEN_CONFIG_ANTICIPATION) > GEN_4) && moveEffect == EFFECT_EXPLOSION)
+                            || moveEffect == EFFECT_OHKO
+                            || moveEffect == EFFECT_SHEER_COLD)
                             {
                                 effect++;
                                 break;
@@ -9684,7 +9691,7 @@ static inline uq4_12_t CalcTypeEffectivenessMultiplierInternal(struct DamageCont
     return modifier;
 }
 
-uq4_12_t CalcTypeEffectivenessMultiplier(struct DamageContext *ctx)
+uq4_12_t CalcTypeEffectivenessMultiplier(struct DamageContext *ctx) //in battle multiplier
 {
     uq4_12_t modifier = UQ_4_12(1.0);
 
@@ -9744,7 +9751,7 @@ static uq4_12_t GetInverseTypeMultiplier(uq4_12_t multiplier)
     }
 }
 
-uq4_12_t GetOverworldTypeEffectiveness(struct Pokemon *mon, u8 moveType)
+uq4_12_t GetOverworldTypeEffectiveness(struct Pokemon *mon, u8 moveType) //overworld multiplier
 {
     uq4_12_t modifier = UQ_4_12(1.0);
     u16 abilityDef = GetMonAbility(mon);

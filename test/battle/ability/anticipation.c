@@ -413,6 +413,7 @@ SINGLE_BATTLE_TEST("Anticipation doesn't trigger from Counter, Metal Burst or Mi
     PARAMETRIZE { move = MOVE_METAL_BURST; species = SPECIES_ROGGENROLA; typeAtk = TYPE_STEEL; typeDef = TYPE_ROCK; }
     PARAMETRIZE { move = MOVE_MIRROR_COAT; species = SPECIES_NIDORINO; typeAtk = TYPE_PSYCHIC; typeDef = TYPE_POISON; }
     GIVEN {
+        WITH_CONFIG(GEN_CONFIG_ANTICIPATION, GEN_4);
         ASSUME(GetMoveType(move) == typeAtk);
         ASSUME(GetSpeciesType(species, 0) == typeDef);
         ASSUME(GetSpeciesType(species, 1) == typeDef);
